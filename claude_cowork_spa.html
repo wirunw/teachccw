@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Cowork — Master Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   RESET & ROOT
+═══════════════════════════════════════ */
+:root{
+  --bg:#0f172a; --s1:#1e293b; --s2:#162032; --s3:#0f1e32;
+  --acc:#3b82f6; --acc2:#8b5cf6; --acc3:#06b6d4;
+  --green:#22c55e; --yellow:#f59e0b; --red:#ef4444; --pink:#ec4899;
+  --text:#f1f5f9; --muted:#94a3b8; --border:#1e293b; --border2:#334155;
+  --header-h:58px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ═══════════════════════════════════════
+   PAGES
+═══════════════════════════════════════ */
+.page{display:none;min-height:calc(100vh - var(--header-h) - 60px);}
+.page.active{display:block;}
+.page-inner{max-width:900px;margin:0 auto;padding:36px 20px 60px;}
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+#header{
+  position:sticky;top:0;z-index:200;
+  background:rgba(10,15,30,0.97);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border2);
+  height:var(--header-h);display:flex;align-items:center;padding:0 16px;gap:12px;
+}
+.hbrand{font-size:1rem;font-weight:800;color:#fff;white-space:nowrap;cursor:pointer;}
+.hbrand span{color:var(--acc);}
+.hnav{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none;}
+.hnav::-webkit-scrollbar{display:none;}
+.ntab{padding:5px 13px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;
+  color:var(--muted);border:none;background:none;white-space:nowrap;transition:all 0.2s;}
+.ntab:hover{color:var(--text);background:rgba(255,255,255,0.07);}
+.ntab.active{color:#fff;background:var(--acc);}
+.hbtn-menu{display:none;background:none;border:none;cursor:pointer;color:var(--text);font-size:1.4rem;flex-shrink:0;}
+@media(max-width:680px){.hnav{display:none;}.hbtn-menu{display:flex;}}
+
+/* ═══════════════════════════════════════
+   DRAWER (mobile)
+═══════════════════════════════════════ */
+#drawer{
+  position:fixed;top:0;left:-280px;width:280px;height:100vh;
+  background:#0d1829;border-right:1px solid var(--border2);
+  z-index:300;transition:left 0.3s ease;padding:70px 16px 40px;overflow-y:auto;
+}
+#drawer.open{left:0;}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:299;display:none;}
+#overlay.show{display:block;}
+.drawer-tab{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;
+  cursor:pointer;font-size:0.92rem;font-weight:600;color:var(--muted);
+  border:none;background:none;width:100%;text-align:left;transition:all 0.2s;margin-bottom:4px;}
+.drawer-tab:hover{color:var(--text);background:rgba(255,255,255,0.06);}
+.drawer-tab.active{color:#fff;background:var(--acc);}
+.drawer-close{position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:1.5rem;cursor:pointer;}
+
+/* ═══════════════════════════════════════
+   LOGIN OVERLAY
+═══════════════════════════════════════ */
+#login-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:linear-gradient(135deg,#050d1a 0%,#0a1628 50%,#06111f 100%);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.login-box{background:var(--s1);border:1px solid var(--border2);border-radius:20px;
+  padding:40px 36px;width:100%;max-width:380px;text-align:center;}
+.login-bear{font-size:3.5rem;margin-bottom:12px;}
+.login-title{font-size:1.4rem;font-weight:800;margin-bottom:4px;}
+.login-sub{color:var(--muted);font-size:0.88rem;margin-bottom:28px;}
+.login-input{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:10px;
+  padding:12px 16px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:0.95rem;
+  margin-bottom:12px;outline:none;transition:border-color 0.2s;}
+.login-input:focus{border-color:var(--acc);}
+.login-btn{width:100%;padding:13px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;
+  font-family:'Sarabun',sans-serif;font-size:1rem;font-weight:700;
+  transition:opacity 0.2s;margin-top:4px;}
+.login-btn:hover{opacity:0.9;}
+.login-err{color:var(--red);font-size:0.85rem;margin-top:8px;display:none;}
+.login-hint{color:var(--muted);font-size:0.78rem;margin-top:16px;}
+
+/* ═══════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════ */
+.page-hero{
+  background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#0c1445 100%);
+  padding:52px 24px 44px;text-align:center;border-bottom:1px solid var(--border2);
+  position:relative;overflow:hidden;
+}
+.page-hero::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse,rgba(99,102,241,0.18),transparent 70%);pointer-events:none;
+}
+.page-hero h1{font-size:1.9rem;font-weight:800;line-height:1.3;margin-bottom:10px;}
+.page-hero h1 span{background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-hero p{color:var(--muted);max-width:560px;margin:0 auto;font-size:0.95rem;line-height:1.7;}
+.hero-badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+.hbadge{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:99px;padding:4px 13px;font-size:0.78rem;color:#c7d2fe;}
+
+.card{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:22px;margin-bottom:18px;transition:border-color 0.2s;}
+.card:hover{border-color:var(--acc);}
+.card-title{font-size:1.02rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.card-desc{color:var(--muted);font-size:0.88rem;line-height:1.7;}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-bottom:24px;}
+.cta-card{cursor:pointer;border-style:dashed;}
+.cta-card:hover{border-color:var(--acc);background:rgba(59,130,246,0.05);}
+.cta-card .card-desc{color:var(--acc);}
+
+.sec-hd{margin-bottom:20px;}
+.sec-hd h2{font-size:1.3rem;font-weight:700;margin-bottom:4px;}
+.sec-hd p{color:var(--muted);font-size:0.88rem;}
+
+.btn{padding:9px 20px;border-radius:9px;border:none;cursor:pointer;
+  font-family:'Sarabun',sans-serif;font-size:0.88rem;font-weight:700;transition:all 0.2s;}
+.btn-p{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;}
+.btn-p:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-s{background:var(--s1);border:1px solid var(--border2);color:var(--text);}
+.btn-s:hover{border-color:var(--acc);color:var(--acc);}
+.btn-g{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);color:#86efac;}
+
+.step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+.step:last-child{border:none;}
+.step-num{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;flex-shrink:0;}
+.step-t{font-weight:700;margin-bottom:3px;font-size:0.92rem;}
+.step-d{color:var(--muted);font-size:0.83rem;line-height:1.6;}
+.step-code{background:var(--s2);border:1px solid var(--border2);border-radius:7px;
+  padding:8px 12px;margin-top:6px;font-size:0.8rem;color:#7dd3fc;font-family:monospace;}
+
+/* ═══════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════ */
+.bear-wrap{font-size:4rem;margin-bottom:10px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.scqa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px;}
+@media(max-width:600px){.scqa-grid{grid-template-columns:1fr;}}
+.scqa-card{border-radius:12px;padding:18px;}
+.scqa-s{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);}
+.scqa-c{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);}
+.scqa-q{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);}
+.scqa-a{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);}
+.scqa-label{font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.scqa-s .scqa-label{color:#86efac;}
+.scqa-c .scqa-label{color:#fca5a5;}
+.scqa-q .scqa-label{color:#fde68a;}
+.scqa-a .scqa-label{color:#93c5fd;}
+.scqa-text{font-size:0.88rem;line-height:1.7;color:#e2e8f0;}
+
+/* ═══════════════════════════════════════
+   ARTICLE PAGE
+═══════════════════════════════════════ */
+.art-body p{margin-bottom:18px;color:#d1d5db;line-height:1.9;font-size:0.97rem;}
+.art-body h2{font-size:1.2rem;font-weight:700;color:#60a5fa;margin:36px 0 12px;
+  padding-bottom:8px;border-bottom:1px solid var(--border2);}
+.art-body strong{color:#c7d2fe;font-weight:600;}
+.art-body blockquote{border-left:3px solid var(--acc);background:rgba(59,130,246,0.08);
+  padding:16px 20px;margin:24px 0;border-radius:0 10px 10px 0;
+  font-style:italic;color:#bfdbfe;font-size:0.92rem;line-height:1.7;}
+.art-body .hi-box{background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.08));
+  border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:18px 22px;margin:24px 0;}
+.art-body .hi-box .hi-lbl{font-size:0.78rem;font-weight:700;color:#a5b4fc;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.art-body .close-q{background:linear-gradient(135deg,rgba(30,40,80,0.8),rgba(15,23,42,0.9));
+  border:1px solid var(--border2);border-radius:14px;padding:28px;margin-top:36px;text-align:center;}
+.art-body .close-q p{color:rgba(255,255,255,0.8);font-size:0.95rem;margin-bottom:10px;}
+.art-body .close-q .q{font-size:1.1rem;font-weight:600;color:#7dd3fc;line-height:1.6;}
+
+/* ═══════════════════════════════════════
+   MINDMAP PAGE
+═══════════════════════════════════════ */
+.mm-root{background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(59,130,246,0.1));
+  border:2px solid rgba(99,102,241,0.4);border-radius:14px;padding:16px 22px;
+  text-align:center;font-size:1.05rem;font-weight:800;color:#a5b4fc;margin-bottom:20px;}
+.mm-branch{background:var(--s1);border:1px solid var(--border2);border-radius:12px;
+  margin-bottom:14px;overflow:hidden;}
+.mm-bhead{background:var(--s2);padding:12px 18px;font-weight:700;font-size:0.9rem;
+  display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+.mm-bhead:hover{background:rgba(255,255,255,0.05);}
+.mm-bhead .mm-icon{font-size:1.1rem;}
+.mm-bhead .mm-arr{margin-left:auto;transition:transform 0.3s;font-size:0.75rem;color:var(--muted);}
+.mm-body{padding:12px 18px;display:block;}
+.mm-body.collapsed{display:none;}
+.mm-l2{padding:6px 0 6px 16px;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:0.88rem;display:flex;align-items:flex-start;gap:8px;}
+.mm-l2:last-child{border:none;}
+.mm-l2 .mm-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);flex-shrink:0;margin-top:7px;}
+.mm-l2 .mm-l2t{flex:1;color:#d1d5db;line-height:1.5;}
+.mm-l2 .mm-l2t strong{color:#93c5fd;}
+.mm-l3{padding:4px 0 4px 20px;font-size:0.82rem;color:var(--muted);display:flex;gap:6px;}
+.mm-l3 .mm-dot3{color:var(--acc2);}
+
+/* ═══════════════════════════════════════
+   FLOWCHART PAGE
+═══════════════════════════════════════ */
+.fc-wrap{overflow-x:auto;display:flex;justify-content:center;padding:20px 0;}
+
+/* ═══════════════════════════════════════
+   CHECKLIST PAGE
+═══════════════════════════════════════ */
+.prog-bar-wrap{background:var(--s1);border:1px solid var(--border2);border-radius:12px;
+  padding:18px 20px;margin-bottom:20px;position:sticky;top:calc(var(--header-h) + 8px);z-index:10;}
+.prog-info{display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.88rem;}
+.prog-track{background:var(--border2);border-radius:99px;height:10px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width 0.4s ease;}
+.prog-pct{font-weight:700;color:var(--acc2);}
+.cl-section{background:var(--s1);border:1px solid var(--border2);border-radius:14px;margin-bottom:18px;overflow:hidden;}
+.cl-sec-hd{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border2);}
+.cl-sec-title{font-size:1rem;font-weight:700;}
+.cl-badge{margin-left:auto;background:var(--border2);border-radius:99px;padding:2px 9px;font-size:0.78rem;color:var(--muted);}
+.cl-badge.done{background:rgba(34,197,94,0.2);color:#86efac;}
+.cl-item{display:flex;align-items:flex-start;gap:12px;padding:13px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.15s;user-select:none;}
+.cl-item:last-child{border:none;}
+.cl-item:hover{background:rgba(255,255,255,0.03);}
+.cl-item.done{opacity:0.55;}
+.cl-item.done .cl-lbl{text-decoration:line-through;color:var(--muted);}
+.cl-chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;
+  margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.cl-item.done .cl-chk{background:var(--green);border-color:var(--green);}
+.cl-tick{display:none;font-size:12px;}
+.cl-item.done .cl-tick{display:block;}
+.cl-lbl{font-size:0.9rem;font-weight:600;line-height:1.5;}
+.cl-desc{font-size:0.8rem;color:var(--muted);margin-top:2px;line-height:1.5;}
+.cl-tag{display:inline-block;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);
+  color:#a5b4fc;border-radius:4px;font-size:0.7rem;padding:1px 6px;margin-top:3px;}
+.cl-actions{display:flex;gap:10px;margin-top:8px;}
+.congrats-box{background:linear-gradient(135deg,rgba(20,83,45,0.8),rgba(22,101,52,0.9));
+  border:1px solid var(--green);border-radius:14px;padding:24px;text-align:center;
+  margin-bottom:18px;display:none;}
+.congrats-box.show{display:block;animation:pop 0.4s ease;}
+@keyframes pop{0%{transform:scale(0.9);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ═══════════════════════════════════════
+   GUIDE PAGE (sub-tabs)
+═══════════════════════════════════════ */
+.gtabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;scrollbar-width:none;flex-wrap:wrap;}
+.gtabs::-webkit-scrollbar{display:none;}
+.gtab{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;
+  color:var(--muted);border:1px solid var(--border2);background:none;white-space:nowrap;transition:all 0.2s;}
+.gtab:hover{color:var(--text);}
+.gtab.active{color:#fff;background:var(--acc2);border-color:var(--acc2);}
+.gpage{display:none;}
+.gpage.active{display:block;}
+.conn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.conn-card{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:16px;
+  cursor:pointer;transition:all 0.2s;}
+.conn-card:hover{border-color:var(--acc);transform:translateY(-2px);}
+.conn-card.on{border-color:var(--green);}
+.conn-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.conn-ico{font-size:1.3rem;}
+.conn-nm{font-weight:700;font-size:0.88rem;}
+.conn-tg{margin-left:auto;font-size:0.7rem;padding:2px 7px;border-radius:4px;
+  background:rgba(34,197,94,0.12);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+.conn-desc{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+.conn-ex{font-size:0.78rem;color:#60a5fa;margin-top:6px;}
+.tip-item{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(251,191,36,0.04));
+  border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:16px;margin-bottom:12px;}
+.tip-t{font-weight:700;color:var(--yellow);font-size:0.88rem;margin-bottom:4px;}
+.tip-b{font-size:0.83rem;color:#fde68a;line-height:1.6;}
+.pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.pref-grid{grid-template-columns:1fr;}}
+.pref-item{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:14px;}
+.pref-lbl{font-weight:700;font-size:0.88rem;margin-bottom:4px;}
+.pref-desc{font-size:0.8rem;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+.chip{display:inline-block;border-radius:5px;font-size:0.72rem;padding:2px 7px;margin:2px;}
+.chip-b{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:#93c5fd;}
+.chip-g{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;}
+.chip-r{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
+.form-group{margin-bottom:14px;}
+.form-lbl{display:block;font-weight:600;font-size:0.85rem;color:var(--muted);margin-bottom:5px;}
+.form-inp,.form-ta,.form-sel{width:100%;background:var(--s2);border:1px solid var(--border2);
+  border-radius:9px;padding:9px 13px;color:var(--text);font-family:'Sarabun',sans-serif;
+  font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+.form-inp:focus,.form-ta:focus,.form-sel:focus{border-color:var(--acc);}
+.form-ta{resize:vertical;min-height:80px;line-height:1.6;}
+.form-sel option{background:#1e293b;}
+.skill-out{background:var(--s2);border:1px solid var(--border2);border-radius:10px;
+  padding:16px;margin-top:12px;display:none;}
+.skill-out.show{display:block;}
+.skill-out pre{font-family:monospace;font-size:0.8rem;color:#7dd3fc;white-space:pre-wrap;line-height:1.6;}
+.task-preview{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:16px;}
+.tpv-title{font-weight:700;color:var(--acc);margin-bottom:10px;font-size:0.88rem;}
+.tpv-row{display:flex;justify-content:space-between;padding:5px 0;
+  border-bottom:1px solid var(--border);font-size:0.82rem;}
+.tpv-row:last-of-type{border:none;}
+.tpv-lbl{color:var(--muted);}
+.tpv-val{color:var(--text);font-weight:600;max-width:160px;text-align:right;}
+.sched-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:620px){.sched-wrap{grid-template-columns:1fr;}}
+
+/* ═══════════════════════════════════════
+   TABLES
+═══════════════════════════════════════ */
+.tbl{width:100%;border-collapse:collapse;font-size:0.85rem;margin-top:10px;}
+.tbl th{padding:9px 13px;text-align:left;border-bottom:1px solid var(--border2);
+  color:var(--muted);background:var(--s2);}
+.tbl td{padding:9px 13px;border-bottom:1px solid var(--border);}
+.tbl tr:last-child td{border:none;}
+
+/* ═══════════════════════════════════════
+   GLOBAL FOOTER
+═══════════════════════════════════════ */
+.gfooter{text-align:center;padding:22px 20px;font-size:0.8rem;color:var(--muted);
+  border-top:1px solid var(--border2);}
+.gfooter a{color:var(--acc);text-decoration:none;}
+
+/* ═══════════════════════════════════════
+   CROSS-LINK STRIP
+═══════════════════════════════════════ */
+.xlink-strip{background:var(--s2);border:1px solid var(--border2);border-radius:12px;
+  padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.xlink-lbl{font-size:0.82rem;color:var(--muted);margin-right:4px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-bear">🤖</div>
+    <div class="login-title">Claude Cowork Guide</div>
+    <div class="login-sub">คู่มือฉบับสมบูรณ์ โดย ดร.ภก.วิรุณ เวชศิริ</div>
+    <input class="login-input" id="lu" type="text" placeholder="Username" autocomplete="off"/>
+    <input class="login-input" id="lp" type="password" placeholder="Password"
+      onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">🔓 เข้าสู่ระบบ</button>
+    <div class="login-err" id="lerr">Username หรือ Password ไม่ถูกต้องครับ</div>
+    <div class="login-hint">pharmconnection.net</div>
+  </div>
+</div>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<div id="header">
+  <button class="hbtn-menu" onclick="toggleDrawer()">☰</button>
+  <div class="hbrand" onclick="goTo('home')">🤖 <span>Cowork</span> Guide</div>
+  <div class="hnav">
+    <button class="ntab active" onclick="goTo('home',this)">🏠 หน้าหลัก</button>
+    <button class="ntab" onclick="goTo('article',this)">📖 บทความ</button>
+    <button class="ntab" onclick="goTo('mindmap',this)">🗺️ Mindmap</button>
+    <button class="ntab" onclick="goTo('flowchart',this)">🔄 Flowchart</button>
+    <button class="ntab" onclick="goTo('checklist',this)">✅ Checklist</button>
+    <button class="ntab" onclick="goTo('guide',this)">🛠️ คู่มือ</button>
+  </div>
+</div>
+
+<!-- ══════════════ DRAWER ══════════════ -->
+<div id="drawer">
+  <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  <button class="drawer-tab active" onclick="goTo('home',null,true)">🏠 หน้าหลัก</button>
+  <button class="drawer-tab" onclick="goTo('article',null,true)">📖 บทความ</button>
+  <button class="drawer-tab" onclick="goTo('mindmap',null,true)">🗺️ Mindmap</button>
+  <button class="drawer-tab" onclick="goTo('flowchart',null,true)">🔄 Flowchart</button>
+  <button class="drawer-tab" onclick="goTo('checklist',null,true)">✅ Checklist</button>
+  <button class="drawer-tab" onclick="goTo('guide',null,true)">🛠️ คู่มือการใช้งาน</button>
+</div>
+<div id="overlay" onclick="closeDrawer()"></div>
+
+<!-- ══════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <div class="page-hero">
+    <div class="bear-wrap">🤖</div>
+    <h1>Master <span>Claude Cowork</span><br>ฉบับสมบูรณ์ 2026</h1>
+    <p>จากการแชทกับ AI สู่การให้ AI ลงมือทำงานแทนเราได้จริง — ครบทุก Module ในที่เดียว</p>
+    <div class="hero-badges">
+      <span class="hbadge">🤖 AI Agent</span>
+      <span class="hbadge">🔌 Connectors & MCP</span>
+      <span class="hbadge">🎯 Custom Skills</span>
+      <span class="hbadge">⏰ Scheduled Tasks</span>
+      <span class="hbadge">🛡️ Anthropic Safety</span>
+    </div>
+  </div>
+  <div class="page-inner">
+
+    <!-- SCQA -->
+    <div class="sec-hd"><h2>📌 สรุปด้วย SCQA Framework</h2><p>ภาพรวมก่อนเจาะลึก</p></div>
+    <div class="scqa-grid">
+      <div class="scqa-card scqa-s">
+        <div class="scqa-label">🟢 S — สถานการณ์</div>
+        <div class="scqa-text">เทรนด์ปี 2026 เปลี่ยนจากการ "แชทกับ AI" มาสู่การให้ AI "ลงมือทำงานแทนเราได้จริง" Claude Cowork จาก Anthropic ถูกออกแบบมาให้คนทุกสาขาสามารถใช้ AI Agent อัตโนมัติสำหรับงานจริง</div>
+      </div>
+      <div class="scqa-card scqa-c">
+        <div class="scqa-label">🔴 C — ปัญหา/ความท้าทาย</div>
+        <div class="scqa-text">ผู้ใช้ส่วนใหญ่ยังใช้ Claude แบบ "แชทธรรมดา" ซึ่งเปลืองศักยภาพ และ AI ทั่วไปยังมีข้อจำกัดในงานเฉพาะทาง เช่น สร้างสไลด์สวยงามโดยไม่มีเครื่องมือภายนอก</div>
+      </div>
+      <div class="scqa-card scqa-q">
+        <div class="scqa-label">❓ Q — คำถามหลัก</div>
+        <div class="scqa-text">จะใช้ Claude Cowork ให้เกิดประสิทธิภาพสูงสุดได้อย่างไร โดยเฉพาะสำหรับผู้ที่ไม่ได้มีพื้นฐานด้านเทคนิค?</div>
+      </div>
+      <div class="scqa-card scqa-a">
+        <div class="scqa-label">✅ A — คำตอบ/แนวทาง</div>
+        <div class="scqa-text">เข้าใจ 5 เสาหลัก: โมเดล & โฟลเดอร์, Connectors/MCP, Custom Skills + Evaluation Loop, Scheduled Tasks, และ Personalization Settings</div>
+      </div>
+    </div>
+
+    <!-- NAV CARDS -->
+    <div class="sec-hd"><h2>🗂️ เนื้อหาในคู่มือนี้</h2><p>คลิกเพื่อไปยังส่วนที่สนใจได้เลยครับ</p></div>
+    <div class="card-grid">
+      <div class="card cta-card" onclick="goTo('article')">
+        <div class="card-title">📖 บทความ Storytelling</div>
+        <div class="card-desc">→ อ่านบทความภาษาไทยฉบับเต็ม ~1,350 คำ สไตล์ TED Talk</div>
+      </div>
+      <div class="card cta-card" onclick="goTo('mindmap')">
+        <div class="card-title">🗺️ Mindmap แบบโต้ตอบ</div>
+        <div class="card-desc">→ โครงสร้างเนื้อหาทั้งหมดแบบ Visual คลิกขยาย/ย่อได้</div>
+      </div>
+      <div class="card cta-card" onclick="goTo('flowchart')">
+        <div class="card-title">🔄 Flowchart การทำงาน</div>
+        <div class="card-desc">→ แผนผัง Step-by-Step ตั้งแต่เริ่มต้นจนถึง Automate</div>
+      </div>
+      <div class="card cta-card" onclick="goTo('checklist')">
+        <div class="card-title">✅ Checklist ความพร้อม</div>
+        <div class="card-desc">→ เช็กตัวเองว่าพร้อมใช้ Cowork ครบทุก Module แล้วหรือยัง</div>
+      </div>
+      <div class="card cta-card" onclick="goTo('guide')">
+        <div class="card-title">🛠️ คู่มือแบบโต้ตอบ</div>
+        <div class="card-desc">→ Guide ครบ 6 หัวข้อ: Setup, Connectors, Skills, Scheduler, Personalize, Tips</div>
+      </div>
+    </div>
+
+    <!-- Quick facts -->
+    <div class="sec-hd"><h2>⚡ 5 เสาหลักของ Cowork</h2></div>
+    <div class="card">
+      <table class="tbl">
+        <thead><tr><th>เสาหลัก</th><th>สิ่งที่ได้</th><th>เข้าถึงผ่าน</th></tr></thead>
+        <tbody>
+          <tr><td>⚙️ โมเดล & โฟลเดอร์</td><td>พื้นฐานที่ถูกต้อง</td><td style="cursor:pointer;color:var(--acc)" onclick="goTo('guide');gotoGtab('setup')">คู่มือ → Setup</td></tr>
+          <tr><td>🔌 Connectors / MCP</td><td>เชื่อมเครื่องมือภายนอก</td><td style="cursor:pointer;color:var(--acc)" onclick="goTo('guide');gotoGtab('conn')">คู่มือ → Connectors</td></tr>
+          <tr><td>🎯 Custom Skills</td><td>ไม่ต้องบอกซ้ำ</td><td style="cursor:pointer;color:var(--acc)" onclick="goTo('guide');gotoGtab('skills')">คู่มือ → Skills</td></tr>
+          <tr><td>⏰ Scheduled Tasks</td><td>AI ทำงานอัตโนมัติ</td><td style="cursor:pointer;color:var(--acc)" onclick="goTo('guide');gotoGtab('sched')">คู่มือ → Scheduler</td></tr>
+          <tr><td>🎨 Personalization</td><td>Claude รู้ใจเราแบบถาวร</td><td style="cursor:pointer;color:var(--acc)" onclick="goTo('guide');gotoGtab('pers')">คู่มือ → Personalize</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: ARTICLE
+══════════════════════════════════════ -->
+<div class="page" id="page-article">
+  <div class="page-hero">
+    <h1>📖 Claude Cowork:<br><span>จากการแชทสู่การให้ AI ทำงานแทนเราจริงๆ</span></h1>
+    <p>บทความภาษาไทย ~1,350 คำ สไตล์ TED Talk Storytelling</p>
+  </div>
+  <div class="page-inner">
+    <div class="xlink-strip">
+      <span class="xlink-lbl">🔗 เชื่อมโยง:</span>
+      <button class="btn btn-s" onclick="goTo('flowchart')">🔄 ดู Flowchart</button>
+      <button class="btn btn-s" onclick="goTo('checklist')">✅ เริ่ม Checklist</button>
+      <button class="btn btn-s" onclick="goTo('guide')">🛠️ คู่มือเชิงลึก</button>
+    </div>
+    <div class="art-body">
+      <p>ผมมีคำถามอยู่คำถามหนึ่งครับ — <strong>ตอนนี้เราใช้ AI แค่ "คุย" หรือเราให้มัน "ทำงาน" ให้จริงๆ?</strong></p>
+      <p>เมื่อต้นปีที่ผ่านมา ผมลองถามเพื่อนหลายคนในวงการสาธารณสุขและการแพทย์ว่าพวกเขาใช้ AI ทำอะไรบ้าง คำตอบที่ได้เกือบทั้งหมดคือ "ขอให้ช่วยเขียนอีเมล", "ถามให้อธิบายยา", หรือ "ให้สรุปเอกสาร" แล้วก็ copy-paste เองทีละครั้ง ผมนั่งฟังแล้วคิดอยู่ในใจว่า… นั่นมันแค่การใช้ AI เป็น "ผู้ช่วยพิมพ์ดีด" ที่ฉลาดขึ้นนิดหน่อยเท่านั้นครับ</p>
+      <p>แต่สิ่งที่เปลี่ยนไปในปี 2026 ไม่ใช่แค่ AI ที่ฉลาดขึ้น — มันคือ AI ที่ <strong>ลงมือทำแทนเรา (Execute on Our Behalf)</strong> ได้จริงๆ แบบที่เราไม่ต้องนั่งคอยดูทุกขั้นตอน และ Claude Cowork คือหนึ่งในผลิตภัณฑ์ที่กำลังเปลี่ยนวิธีที่เราทำงานได้อย่างน่าสนใจมากครับ</p>
+      <h2>Claude Cowork คืออะไร? ทำไมถึงต่างจาก AI ตัวอื่น?</h2>
+      <p>ลองนึกภาพแบบนี้ครับ — ถ้า AI ทั่วไปเปรียบเหมือน "ที่ปรึกษาที่ฉลาดมาก" ที่นั่งอยู่ข้างๆ แล้วบอกว่า "ควรทำอย่างนี้นะ" Claude Cowork ก็เปรียบเหมือน "ผู้ช่วยที่ลงมือทำงานให้จริง" ที่เมื่อเราบอกว่า "ช่วยสร้างรายงานนี้หน่อย" มันก็เปิดอินเทอร์เน็ต ค้นหาข้อมูล เขียนรายงาน และบันทึกไฟล์เป็น Word Document ให้เราเลย โดยไม่ต้องบอกทุกขั้นตอนครับ</p>
+      <p>Claude Cowork เป็นผลิตภัณฑ์ของ <strong>Anthropic</strong> บริษัทที่ขึ้นชื่อเรื่องการให้ความสำคัญกับ <strong>ความปลอดภัยของ AI (AI Safety)</strong> เป็นอันดับหนึ่ง เพียงสร้างบัญชีที่ claude.ai แล้วดาวน์โหลดแอปเดสก์ท็อป ก็จะพบ <strong>3 แท็บหลัก</strong> คือ Chat (แชทธรรมดา), <strong>Cowork</strong> และ Claude Code (สำหรับนักพัฒนาโดยเฉพาะ)</p>
+      <h2>ตั้งต้นให้ถูก: โมเดลและการเลือกโฟลเดอร์</h2>
+      <p>ก่อนสั่งงาน Cowork มีสองสิ่งที่ต้องทำก่อนเสมอครับ — เลือก <strong>โมเดล AI (Model)</strong> และเลือก <strong>โฟลเดอร์ทำงาน (Working Folder)</strong> โดยแยกแต่ละโปรเจกต์ให้ชัดเจน</p>
+      <p>โมเดลมีสามตัวให้เลือก คือ <strong>Sonnet</strong> สำหรับงานทั่วไปซึ่งใช้ได้ 99% ของเวลา, <strong>Opus</strong> สำหรับงานซับซ้อนพิเศษ, และ <strong>Haiku</strong> สำหรับคำตอบด่วน และแนะนำให้เปิด <strong>Extended Thinking</strong> ทิ้งไว้เสมอ เพราะใช้ Token เพิ่มเล็กน้อยแต่ไม่ต้องคอยเปิด-ปิดครับ</p>
+      <h2>พลังที่แท้จริง: Connectors และ MCPs</h2>
+      <p>นี่คือส่วนที่ผมคิดว่าคนส่วนใหญ่ยังไม่รู้จักครับ <strong>Connectors</strong> หรือ <strong>MCP (Model Context Protocol)</strong> คือกลไกที่ทำให้ Claude เชื่อมต่อกับเครื่องมือภายนอกได้ ลองนึกภาพว่า Cowork เปรียบเหมือนสมองที่ฉลาด แต่ Connectors คือ "มือ" และ "ขา" ที่ทำให้มันออกไปทำงานในโลกจริงได้</p>
+      <p>เมื่อเปิด Connector ของ <strong>Gmail</strong> Cowork สามารถอ่าน จัดระเบียบ และส่งอีเมลในนามเราได้ หรือถ้าเชื่อมต่อกับ <strong>Gamma</strong> ก็สามารถสั่ง Cowork ให้ใช้ Gamma สร้างสไลด์ที่สวยงามระดับมืออาชีพได้ทันทีครับ</p>
+      <div class="hi-box">
+        <div class="hi-lbl">💡 บทเรียนสำคัญ</div>
+        AI ทั่วไปทำได้ส่วนใหญ่ของสิ่งที่ต้องการ แต่งานบางอย่างต้องการความเชี่ยวชาญเฉพาะด้าน นั่นคือเหตุผลที่ต้องมี Connectors — ไม่ใช่ความอ่อนแอของ AI แต่มันคือการออกแบบที่ชาญฉลาดที่รู้ว่าเมื่อไหรควรส่งงานต่อให้ผู้เชี่ยวชาญครับ
+      </div>
+      <h2>Skills: ผู้ช่วยที่รู้ใจโดยไม่ต้องบอกซ้ำ</h2>
+      <p>ลองนึกถึงสิ่งที่น่าหงุดหงิดที่สุดในการทำงานกับ AI ครับ — ต้องอธิบายวิธีการทำงานซ้ำทุกครั้งที่เปิดแชทใหม่ นั่นคือปัญหาที่ <strong>Skills</strong> มาแก้ไข Skills คือชุดคำสั่ง (Markdown file) ที่ Claude โหลดขึ้นมาโดยอัตโนมัติเมื่อทำงานที่เกี่ยวข้อง</p>
+      <p>วิธีสร้าง Custom Skill นั้นง่ายกว่าที่คิดครับ เพียงบอก Cowork ว่าต้องการอะไร จากนั้น Cowork จะดึง Skill Creator มาช่วยสร้าง Skill ให้ พร้อมกับรัน <strong>Evaluation Loop</strong> ที่ทดสอบเปรียบเทียบผลลัพธ์ "ใช้ Skill" กับ "ไม่ใช้ Skill" ให้เราดูและให้ Feedback ได้ก่อนบันทึก</p>
+      <h2>Scheduled Tasks: AI ที่ทำงานในขณะที่เรานอนหลับ</h2>
+      <p>ถ้า Skills คือ "ความจำ" ของ Cowork Scheduled Tasks ก็คือ "นาฬิกาปลุก" ที่สั่งให้มันลงมือทำโดยไม่ต้องรอให้เราเปิดโปรแกรมครับ ตัวอย่างเช่น ตั้งให้ Cowork สรุปอีเมลสำคัญทุกเช้าก่อนเราตื่น, เชื่อมต่อกับ CRM รายงานทีมขายทุกวัน, หรือเชื่อมกับ Kiwi.com ติดตามราคาตั๋วเครื่องบินแบบ <strong>Dynamic Pricing</strong> อัตโนมัติ</p>
+      <blockquote>ระบบ History ของ Scheduled Tasks บันทึกการทำงานทุกครั้งไว้ ทำให้กลับมาตรวจสอบหรือดึงข้อมูลย้อนหลังได้ตลอดเวลา</blockquote>
+      <h2>Personalization: สอน Cowork ให้รู้ใจเราแบบถาวร</h2>
+      <p>ขั้นตอนสุดท้ายที่คนมักข้ามไปคือการตั้งค่า <strong>Personalization Settings</strong> แบ่งเป็นสองส่วน คือ <strong>Claude Personalization</strong> ที่ใช้กับทุกแท็บ เช่น Tone, Formatting Style, การค้นหาออนไลน์ และส่วนที่สองคือ <strong>Cowork Global Instructions</strong> เช่น รูปแบบชื่อไฟล์ครับ</p>
+      <h2>แล้วมันเหมาะกับใคร?</h2>
+      <p>Claude Cowork ไม่ได้ออกแบบมาสำหรับโปรแกรมเมอร์เท่านั้นครับ มันถูกสร้างมาสำหรับ <strong>คนทำงานทุกสาขา</strong> ที่อยากได้ AI ที่ลงมือทำจริง สิ่งที่ผมประทับใจมากที่สุดคือ <strong>"ต้นทุนในการเรียนรู้ที่ต่ำมาก แต่ผลตอบแทนที่สูงมาก"</strong> และที่สำคัญ เพดานของความสามารถนั้นกำหนดโดย "ความทะเยอทะยานของเรา" ไม่ใช่ข้อจำกัดของเครื่องมือครับ</p>
+      <div class="close-q">
+        <p>คำถามที่ผมอยากทิ้งไว้ให้เราคิดร่วมกันครับ —</p>
+        <div class="q">ถ้าเราสามารถมอบงานที่ใช้เวลาซ้ำๆ ทุกวันให้ AI ทำแทนได้ภายใน 30 นาทีตั้งแต่วันนี้ เราจะนำเวลาที่ได้คืนมานั้นไปทุ่มกับสิ่งที่มีคุณค่ากว่าอะไรได้บ้างครับ?</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="goTo('flowchart')">→ ดู Flowchart ต่อ</button>
+      <button class="btn btn-s" onclick="goTo('checklist')">✅ ทำ Checklist</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: MINDMAP
+══════════════════════════════════════ -->
+<div class="page" id="page-mindmap">
+  <div class="page-hero">
+    <h1>🗺️ <span>Mindmap</span> — Claude Cowork</h1>
+    <p>โครงสร้างเนื้อหาทั้งหมด คลิกหัวข้อเพื่อขยาย/ย่อ</p>
+  </div>
+  <div class="page-inner">
+    <div class="xlink-strip">
+      <span class="xlink-lbl">🔗 เชื่อมโยง:</span>
+      <button class="btn btn-s" onclick="goTo('article')">📖 อ่านบทความ</button>
+      <button class="btn btn-s" onclick="goTo('flowchart')">🔄 ดู Flowchart</button>
+      <button class="btn btn-s" onclick="expandAll()">🔓 ขยายทั้งหมด</button>
+      <button class="btn btn-s" onclick="collapseAll()">🔒 ย่อทั้งหมด</button>
+    </div>
+    <div class="mm-root">🤖 Master Claude Cowork — คู่มือฉบับสมบูรณ์</div>
+
+    <div id="mmdata"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: FLOWCHART
+══════════════════════════════════════ -->
+<div class="page" id="page-flowchart">
+  <div class="page-hero">
+    <h1>🔄 <span>Flowchart</span> — กระบวนการทำงาน</h1>
+    <p>แผนผัง Step-by-Step ตั้งแต่เริ่มต้นจนถึงการ Automate งานอัตโนมัติ</p>
+  </div>
+  <div class="page-inner">
+    <div class="xlink-strip">
+      <span class="xlink-lbl">🔗 เชื่อมโยง:</span>
+      <button class="btn btn-s" onclick="goTo('checklist')">✅ เช็ก Checklist</button>
+      <button class="btn btn-s" onclick="goTo('guide');gotoGtab('setup')">⚙️ ไปที่ Setup</button>
+    </div>
+    <div class="fc-wrap">
+<svg viewBox="0 0 700 1420" xmlns="http://www.w3.org/2000/svg" width="660" height="1380">
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#94a3b8"/></marker>
+    <marker id="ah-y" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#4ade80"/></marker>
+    <marker id="ah-n" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#f87171"/></marker>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="250" y="20" width="200" height="50" rx="25" fill="#16a34a" filter="url(#glow)"/>
+  <text x="350" y="50" font-family="Sarabun" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">🚀 เริ่มต้น</text>
+  <line x1="350" y1="70" x2="350" y2="106" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="106" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="128" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">📲 สร้างบัญชี claude.ai</text>
+  <text x="350" y="148" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">ดาวน์โหลดแอปเดสก์ท็อป</text>
+  <line x1="350" y1="164" x2="350" y2="200" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="200" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="222" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">🗂️ เลือกแท็บ Cowork</text>
+  <text x="350" y="242" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">ไม่ใช่ Chat หรือ Claude Code</text>
+  <line x1="350" y1="258" x2="350" y2="294" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="294" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="316" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">📁 เลือกโฟลเดอร์โปรเจกต์</text>
+  <text x="350" y="336" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">แยกแต่ละงานเป็นโฟลเดอร์ใหม่เสมอ</text>
+  <line x1="350" y1="352" x2="350" y2="388" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="388" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="410" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">🧠 เลือกโมเดล + Extended Thinking</text>
+  <text x="350" y="430" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">Sonnet (ทั่วไป) / Opus (ซับซ้อนมาก)</text>
+  <line x1="350" y1="446" x2="350" y2="490" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <polygon points="350,490 510,548 350,606 190,548" fill="#b45309"/>
+  <text x="350" y="542" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ต้องใช้เครื่องมือ</text>
+  <text x="350" y="562" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ภายนอกหรือไม่?</text>
+  <line x1="510" y1="548" x2="570" y2="548" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <text x="545" y="540" font-family="Sarabun" font-size="11" font-weight="700" fill="#f87171" text-anchor="middle">ไม่</text>
+  <line x1="570" y1="548" x2="570" y2="688" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="570" y1="688" x2="500" y2="688" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="350" y1="606" x2="350" y2="636" stroke="#4ade80" stroke-width="2" marker-end="url(#ah-y)"/>
+  <text x="366" y="623" font-family="Sarabun" font-size="11" font-weight="700" fill="#4ade80">ใช่</text>
+  <rect x="200" y="636" width="300" height="58" rx="10" fill="#7c3aed"/>
+  <text x="350" y="658" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">🔌 เพิ่ม Connector / MCP</text>
+  <text x="350" y="678" font-family="Sarabun" font-size="11" fill="#ddd6fe" text-anchor="middle">Gmail · Gamma · Kiwi · ClickUp ฯลฯ</text>
+  <line x1="350" y1="694" x2="350" y2="730" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <polygon points="350,730 510,792 350,854 190,792" fill="#b45309"/>
+  <text x="350" y="786" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ต้องใช้สไตล์/รูปแบบ</text>
+  <text x="350" y="806" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ซ้ำๆ หรือไม่?</text>
+  <line x1="510" y1="792" x2="580" y2="792" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <text x="550" y="784" font-family="Sarabun" font-size="11" font-weight="700" fill="#f87171" text-anchor="middle">ไม่</text>
+  <line x1="580" y1="792" x2="580" y2="926" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="580" y1="926" x2="500" y2="926" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="350" y1="854" x2="350" y2="884" stroke="#4ade80" stroke-width="2" marker-end="url(#ah-y)"/>
+  <text x="366" y="871" font-family="Sarabun" font-size="11" font-weight="700" fill="#4ade80">ใช่</text>
+  <rect x="200" y="884" width="300" height="58" rx="10" fill="#7c3aed"/>
+  <text x="350" y="906" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">🎯 สร้าง / ใช้ Skill</text>
+  <text x="350" y="926" font-family="Sarabun" font-size="11" fill="#ddd6fe" text-anchor="middle">Custom Skill + Evaluation Loop + Feedback</text>
+  <line x1="350" y1="942" x2="350" y2="978" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <polygon points="350,978 510,1038 350,1098 190,1038" fill="#b45309"/>
+  <text x="350" y="1032" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ต้องทำงานนี้</text>
+  <text x="350" y="1052" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">ซ้ำๆ หรือไม่?</text>
+  <line x1="510" y1="1038" x2="590" y2="1038" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <text x="555" y="1030" font-family="Sarabun" font-size="11" font-weight="700" fill="#f87171" text-anchor="middle">ไม่</text>
+  <line x1="590" y1="1038" x2="590" y2="1164" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="590" y1="1164" x2="500" y2="1164" stroke="#f87171" stroke-width="2" marker-end="url(#ah-n)"/>
+  <line x1="350" y1="1098" x2="350" y2="1128" stroke="#4ade80" stroke-width="2" marker-end="url(#ah-y)"/>
+  <text x="366" y="1115" font-family="Sarabun" font-size="11" font-weight="700" fill="#4ade80">ใช่</text>
+  <rect x="200" y="1128" width="300" height="58" rx="10" fill="#7c3aed"/>
+  <text x="350" y="1150" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">⏰ ตั้ง Scheduled Task</text>
+  <text x="350" y="1170" font-family="Sarabun" font-size="11" fill="#ddd6fe" text-anchor="middle">Name · Prompt · Frequency · Folder</text>
+  <line x1="350" y1="1186" x2="350" y2="1222" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="1222" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="1244" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">▶️ Claude Execute งาน</text>
+  <text x="350" y="1264" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">บันทึกไฟล์ผลลัพธ์ใน Folder อัตโนมัติ</text>
+  <line x1="350" y1="1280" x2="350" y2="1316" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="200" y="1316" width="300" height="58" rx="10" fill="#1e40af"/>
+  <text x="350" y="1338" font-family="Sarabun" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">🔍 ตรวจสอบ + ให้ Feedback</text>
+  <text x="350" y="1358" font-family="Sarabun" font-size="11" fill="#bfdbfe" text-anchor="middle">ดู History / ปรับ Skill / ปรับ Prompt</text>
+  <line x1="350" y1="1374" x2="350" y2="1400" stroke="#94a3b8" stroke-width="2" marker-end="url(#ah)"/>
+  <rect x="250" y="1400" width="200" height="50" rx="25" fill="#16a34a" filter="url(#glow)"/>
+  <text x="350" y="1425" font-family="Sarabun" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">✅ งานเสร็จสมบูรณ์</text>
+  <rect x="18" y="430" width="148" height="168" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="92" y="450" font-family="Sarabun" font-size="10" fill="#94a3b8" text-anchor="middle">— คำอธิบาย —</text>
+  <rect x="28" y="460" width="14" height="14" rx="3" fill="#16a34a"/><text x="48" y="472" font-family="Sarabun" font-size="10" fill="#e2e8f0">เริ่ม / สิ้นสุด</text>
+  <rect x="28" y="482" width="14" height="14" rx="3" fill="#1e40af"/><text x="48" y="494" font-family="Sarabun" font-size="10" fill="#e2e8f0">ขั้นตอนทั่วไป</text>
+  <polygon points="35,512 42,504 49,512 42,520" fill="#b45309"/><text x="57" y="514" font-family="Sarabun" font-size="10" fill="#e2e8f0">การตัดสินใจ</text>
+  <rect x="28" y="528" width="14" height="14" rx="3" fill="#7c3aed"/><text x="48" y="540" font-family="Sarabun" font-size="10" fill="#e2e8f0">เครื่องมือพิเศษ</text>
+  <line x1="28" y1="562" x2="42" y2="562" stroke="#4ade80" stroke-width="2"/><text x="48" y="566" font-family="Sarabun" font-size="10" fill="#4ade80">ใช่</text>
+  <line x1="28" y1="580" x2="42" y2="580" stroke="#f87171" stroke-width="2"/><text x="48" y="584" font-family="Sarabun" font-size="10" fill="#f87171">ไม่</text>
+</svg>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="goTo('checklist')">→ ทำ Checklist ต่อ</button>
+      <button class="btn btn-s" onclick="goTo('guide');gotoGtab('conn')">🔌 เรียนรู้ Connectors</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: CHECKLIST
+══════════════════════════════════════ -->
+<div class="page" id="page-checklist">
+  <div class="page-hero">
+    <h1>✅ <span>Checklist</span> ความพร้อม</h1>
+    <p>เช็กว่าพร้อมใช้ Claude Cowork ครบทุก Module แล้วหรือยัง — 19 ข้อ ใน 3 หมวด</p>
+  </div>
+  <div class="page-inner">
+    <div class="xlink-strip">
+      <span class="xlink-lbl">🔗 เชื่อมโยง:</span>
+      <button class="btn btn-s" onclick="goTo('guide');gotoGtab('setup')">⚙️ Setup Guide</button>
+      <button class="btn btn-s" onclick="goTo('guide');gotoGtab('conn')">🔌 Connectors</button>
+      <button class="btn btn-s" onclick="goTo('guide');gotoGtab('skills')">🎯 Skills</button>
+    </div>
+    <div class="congrats-box" id="congrats">
+      <div style="font-size:1.6rem;margin-bottom:8px;">🎉</div>
+      <div style="font-size:1.1rem;font-weight:700;color:#86efac;margin-bottom:6px;">ยอดเยี่ยมมากครับ!</div>
+      <div style="font-size:0.88rem;color:#bbf7d0;">คุณพร้อมใช้ Claude Cowork ได้อย่างเต็มประสิทธิภาพแล้ว — ลองเริ่มงานแรกได้เลยครับ!</div>
+    </div>
+    <div class="prog-bar-wrap">
+      <div class="prog-info"><span>ความคืบหน้า</span><span class="prog-pct" id="pct">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:5px;" id="pcnt">0 / 19 ข้อเสร็จแล้ว</div>
+    </div>
+    <div id="cl-sections"></div>
+    <div class="cl-actions">
+      <button class="btn btn-s" onclick="clReset()">🔄 รีเซ็ตทั้งหมด</button>
+      <button class="btn btn-p" onclick="clAll()">✅ เลือกทั้งหมด</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: GUIDE
+══════════════════════════════════════ -->
+<div class="page" id="page-guide">
+  <div class="page-hero">
+    <h1>🛠️ คู่มือการใช้งาน <span>Claude Cowork</span></h1>
+    <p>เจาะลึกทุก Module พร้อม Interactive Tools</p>
+  </div>
+  <div class="page-inner">
+    <div class="xlink-strip">
+      <span class="xlink-lbl">🔗 เชื่อมโยง:</span>
+      <button class="btn btn-s" onclick="goTo('article')">📖 บทความ</button>
+      <button class="btn btn-s" onclick="goTo('flowchart')">🔄 Flowchart</button>
+      <button class="btn btn-s" onclick="goTo('checklist')">✅ Checklist</button>
+    </div>
+    <div class="gtabs">
+      <button class="gtab active" id="gt-setup" onclick="gotoGtab('setup')">⚙️ Setup</button>
+      <button class="gtab" id="gt-conn" onclick="gotoGtab('conn')">🔌 Connectors</button>
+      <button class="gtab" id="gt-skills" onclick="gotoGtab('skills')">🎯 Skills</button>
+      <button class="gtab" id="gt-sched" onclick="gotoGtab('sched')">⏰ Scheduler</button>
+      <button class="gtab" id="gt-pers" onclick="gotoGtab('pers')">🎨 Personalize</button>
+      <button class="gtab" id="gt-tips" onclick="gotoGtab('tips')">💡 Pro Tips</button>
+    </div>
+
+    <!-- SETUP -->
+    <div class="gpage active" id="gpage-setup">
+      <div class="card">
+        <div class="card-title">📊 เปรียบเทียบ 3 แท็บหลัก</div>
+        <table class="tbl"><thead><tr><th>แท็บ</th><th>ทำอะไร</th><th>เหมาะกับ</th></tr></thead>
+        <tbody>
+          <tr><td style="color:#60a5fa;font-weight:700;">💬 Chat</td><td>แชทธรรมดา ถาม-ตอบ</td><td>ต้องการคำแนะนำ</td></tr>
+          <tr><td style="color:#a78bfa;font-weight:700;">🛠️ Cowork</td><td>สั่งงานอัตโนมัติ Execute</td><td>คนทำงานทุกสาขา ✅</td></tr>
+          <tr><td style="color:#34d399;font-weight:700;">💻 Claude Code</td><td>เขียนโค้ด สร้างซอฟต์แวร์</td><td>นักพัฒนา</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title">🧠 โมเดล AI</div>
+        <table class="tbl"><thead><tr><th>โมเดล</th><th>ใช้เมื่อ</th><th>Token</th></tr></thead>
+        <tbody>
+          <tr><td style="color:#60a5fa;font-weight:700;">⚡ Sonnet</td><td>งานทั่วไป (แนะนำ 99%)</td><td style="color:#86efac;">ปานกลาง</td></tr>
+          <tr><td style="color:#a78bfa;font-weight:700;">🔮 Opus</td><td>งานซับซ้อนพิเศษ</td><td style="color:#fca5a5;">สูง</td></tr>
+          <tr><td style="color:#34d399;font-weight:700;">🐦 Haiku</td><td>คำตอบด่วน</td><td style="color:#86efac;">ต่ำ</td></tr>
+        </tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-title">🔢 ขั้นตอน Setup</div>
+        <div class="step"><div class="step-num">1</div><div><div class="step-t">สร้างบัญชี claude.ai</div><div class="step-d">Sign Up ด้วย Email หรือ Google/Apple Account</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-t">ดาวน์โหลดแอปเดสก์ท็อป</div><div class="step-d">คลิกไอคอน ↓ ที่มุมล่างซ้ายของ claude.ai</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-t">เลือกแท็บ Cowork</div><div class="step-d">ไม่ใช่ Chat หรือ Claude Code</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-t">เลือกโฟลเดอร์โปรเจกต์</div><div class="step-d">แยกโปรเจกต์ = แยกโฟลเดอร์เสมอ → Allow</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="step-t">เลือก Sonnet + เปิด Extended Thinking</div><div class="step-d">เปิดทิ้งไว้เสมอ — ใช้ Token เพิ่มเล็กน้อยแต่คุ้มค่า</div></div></div>
+      </div>
+    </div>
+
+    <!-- CONNECTORS -->
+    <div class="gpage" id="gpage-conn">
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">🔌 วิธีเพิ่ม Connector</div>
+        <div class="step"><div class="step-num">1</div><div><div class="step-t">คลิก + (Plus Sign) ใต้ช่อง Input</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-t">ไปที่แท็บ Connectors → Manage Connectors</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-t">Browse Connectors → ค้นหา → คลิก +</div><div class="step-d">ค้นหาด้วย Category Filter หรือ Search bar เช่น "Jira"</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-t">ผ่าน Authentication → ตั้งค่าสิทธิ์</div><div class="step-d">Always Allow / Needs Approval / Block</div></div></div>
+      </div>
+      <div class="conn-grid" id="connGrid"></div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="gpage" id="gpage-skills">
+      <div class="card-grid">
+        <div class="card"><div class="card-title">🏛️ Anthropic Skills</div><div class="card-desc">ติดตั้งมาพร้อมกับระบบ<br><br><span style="color:#60a5fa">• Skill Creator</span><br><span style="color:#60a5fa">• Docs Skill</span><br><span style="color:#60a5fa">• PowerPoint Skill</span><br><span style="color:#60a5fa">• Data Analysis</span></div></div>
+        <div class="card"><div class="card-title">👤 Custom Skills</div><div class="card-desc">สร้างเองตามสไตล์<br><br><span style="color:#a78bfa">• Brand Style Skill</span><br><span style="color:#a78bfa">• Report Template</span><br><span style="color:#a78bfa">• Writing Voice</span><br><span style="color:#a78bfa">• File Naming</span></div></div>
+        <div class="card"><div class="card-title" style="color:var(--yellow);">⚠️ Community Skills</div><div class="card-desc">ดาวน์โหลดจาก GitHub<br><br><span style="color:#fca5a5">ความเสี่ยง: Prompt Injection</span><br><br>ส่ง Skill ให้ Claude ตรวจก่อนใช้งาน</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🛠️ Skill Prompt Generator</div>
+        <div class="form-group"><label class="form-lbl">ชื่อ Skill</label><input class="form-inp" id="sn" placeholder="เช่น My Brand Skill" oninput="genSkill()"/></div>
+        <div class="form-group"><label class="form-lbl">สิ่งที่ต้องการให้ Skill ทำ</label><textarea class="form-ta" id="sw" placeholder="เช่น ใส่สีน้ำเงินและฟอนต์ Sarabun ในเอกสารทุกชิ้น" oninput="genSkill()"></textarea></div>
+        <div class="form-group"><label class="form-lbl">Trigger Condition</label><input class="form-inp" id="st" placeholder="เช่น เมื่อผู้ใช้ขอสร้างรายงานหรือสไลด์" oninput="genSkill()"/></div>
+        <button class="btn btn-p" onclick="genSkill(true)">✨ Generate Skill Prompt</button>
+        <div class="skill-out" id="skillOut"><div style="font-size:0.8rem;color:var(--muted);margin-bottom:8px;">📋 Copy Prompt นี้ไปวางใน Cowork</div><pre id="skillPre"></pre></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔄 Evaluation Loop</div>
+        <div class="step"><div class="step-num">1</div><div><div class="step-t">Claude สร้าง Skill ตาม Prompt</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-t">รัน Evaluation อัตโนมัติ</div><div class="step-d">เปรียบเทียบ: ใช้ Skill vs ไม่ใช้ Skill + ให้คะแนน</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-t">เราให้ Feedback</div><div class="step-d">เช่น "Beige background ยังไม่ถูกต้อง กรุณาแก้ไข"</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-t">กด "Copy to Your Skills"</div><div class="step-d">Skill ถูกบันทึกใน Customize → Skills</div></div></div>
+      </div>
+    </div>
+
+    <!-- SCHEDULER -->
+    <div class="gpage" id="gpage-sched">
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">📋 วิธีสร้าง Scheduled Task</div>
+        <div class="step"><div class="step-num">1</div><div><div class="step-t">Left Menu → Scheduled → New Task</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-t">กรอก Name, Prompt, Frequency, Folder</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-t">Save → Run Now เพื่อทดสอบ</div><div class="step-d">ดูผลใน History ได้ตลอดเวลา</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🛠️ Task Builder</div>
+        <div class="sched-wrap">
+          <div>
+            <div class="form-group"><label class="form-lbl">ชื่องาน</label><input class="form-inp" id="tn" placeholder="เช่น Daily Email Brief" oninput="upTask()"/></div>
+            <div class="form-group"><label class="form-lbl">Prompt</label><textarea class="form-ta" id="tp" placeholder="เช่น: อ่านอีเมลที่ยังไม่ได้อ่านในช่วง 24 ชม. และสรุปเป็น Bullet Points ตามลำดับความสำคัญ" oninput="upTask()"></textarea></div>
+            <div class="form-group"><label class="form-lbl">ความถี่</label>
+              <select class="form-sel" id="tf" onchange="upTask()">
+                <option>ทุกวัน (Daily)</option><option>ทุกสัปดาห์ (Weekly)</option>
+                <option>ทุก 2 ชั่วโมง</option><option>ทุกเดือน</option>
+              </select>
+            </div>
+            <div class="form-group"><label class="form-lbl">เวลา (24h)</label><input class="form-inp" id="tt" placeholder="เช่น 07:00" oninput="upTask()"/></div>
+            <div class="form-group"><label class="form-lbl">Connector</label>
+              <select class="form-sel" id="tc" onchange="upTask()">
+                <option>Gmail</option><option>Web Search</option><option>Kiwi.com</option>
+                <option>ClickUp</option><option>ไม่มี</option>
+              </select>
+            </div>
+          </div>
+          <div class="task-preview">
+            <div class="tpv-title">👀 Preview</div>
+            <div class="tpv-row"><span class="tpv-lbl">📝 ชื่อ</span><span class="tpv-val" id="pn">—</span></div>
+            <div class="tpv-row"><span class="tpv-lbl">⏱️ ความถี่</span><span class="tpv-val" id="pf">—</span></div>
+            <div class="tpv-row"><span class="tpv-lbl">🕐 เวลา</span><span class="tpv-val" id="pt">—</span></div>
+            <div class="tpv-row"><span class="tpv-lbl">🔌 Connector</span><span class="tpv-val" id="pc">—</span></div>
+            <div style="margin-top:12px;font-size:0.8rem;color:var(--muted);line-height:1.5;" id="pp">ยังไม่มี Prompt...</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;"><button class="btn btn-p" onclick="cpTask()">📋 Copy Task Prompt</button></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💡 ตัวอย่าง Scheduled Tasks</div>
+        <div class="conn-grid">
+          <div class="conn-card"><div class="conn-hd"><span class="conn-ico">☀️</span><span class="conn-nm">Daily Email Brief</span></div><div class="conn-desc">สรุปอีเมลสำคัญ 24 ชม.</div><div class="conn-ex">Gmail · ทุกเช้า 07:00</div></div>
+          <div class="conn-card"><div class="conn-hd"><span class="conn-ico">✈️</span><span class="conn-nm">Flight Tracker</span></div><div class="conn-desc">ติดตามราคาตั๋ว แนะนำเวลาซื้อที่ดีที่สุด</div><div class="conn-ex">Kiwi.com · ทุกวัน 09:00</div></div>
+          <div class="conn-card"><div class="conn-hd"><span class="conn-ico">📊</span><span class="conn-nm">Sales Report</span></div><div class="conn-desc">รายงาน CRM กิจกรรมทีมขาย</div><div class="conn-ex">ClickUp · ทุกเช้า 08:00</div></div>
+          <div class="conn-card"><div class="conn-hd"><span class="conn-ico">📰</span><span class="conn-nm">News Digest</span></div><div class="conn-desc">สรุปข่าวสาขาที่สนใจ 5 ประเด็น</div><div class="conn-ex">Web Search · ทุกจันทร์ 08:00</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONALIZE -->
+    <div class="gpage" id="gpage-pers">
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">📍 วิธีเข้าถึง</div>
+        <div class="card-desc">
+          <strong style="color:#60a5fa;">Claude Personalization</strong> → ชื่อผู้ใช้ (มุมล่างซ้าย) → Settings → Claude Personalization<br>
+          <span style="font-size:0.82rem;color:var(--muted);">ใช้กับทุกแท็บ (Chat, Cowork, Code)</span><br><br>
+          <strong style="color:#a78bfa;">Cowork Global Instructions</strong> → Settings → Cowork → Global Instructions → Edit<br>
+          <span style="font-size:0.82rem;color:var(--muted);">ใช้เฉพาะแท็บ Cowork</span>
+        </div>
+      </div>
+      <div class="pref-grid">
+        <div class="pref-item"><div class="pref-lbl">🗣️ Communication</div><div class="pref-desc">วิธีที่ Claude สื่อสาร</div><div><span class="chip chip-g">✓ ตรงไปตรงมา</span><span class="chip chip-g">✓ ไม่ใช้คำย่อ</span><span class="chip chip-r">✗ Hedge มากเกิน</span></div></div>
+        <div class="pref-item"><div class="pref-lbl">🎭 Tone</div><div class="pref-desc">น้ำเสียงการตอบ</div><div><span class="chip chip-g">✓ Professional</span><span class="chip chip-g">✓ Confident</span><span class="chip chip-r">✗ ลังเลโดยไม่จำเป็น</span></div></div>
+        <div class="pref-item"><div class="pref-lbl">📐 Formatting</div><div class="pref-desc">รูปแบบการแสดงผล</div><div><span class="chip chip-r">✗ Bold มากเกิน</span><span class="chip chip-g">✓ เรียบง่าย</span><span class="chip chip-g">✓ โครงสร้างชัด</span></div></div>
+        <div class="pref-item"><div class="pref-lbl">🔍 Problem Solving</div><div class="pref-desc">วิธีแก้ปัญหา</div><div><span class="chip chip-g">✓ ค้นหาเมื่อไม่ชัวร์</span><span class="chip chip-g">✓ Primary Sources</span><span class="chip chip-r">✗ คาดเดาข้อมูลเก่า</span></div></div>
+        <div class="pref-item"><div class="pref-lbl">📁 File Naming</div><div class="pref-desc">รูปแบบชื่อไฟล์</div><div class="step-code" style="margin:0">YYYY-MM-DD_ชื่อโปรเจกต์_v1.docx</div></div>
+        <div class="pref-item"><div class="pref-lbl">🗂️ Folder Structure</div><div class="pref-desc">โครงสร้างโฟลเดอร์</div><div class="step-code" style="margin:0">Project/<br>├── Reports/<br>├── Decks/<br>└── Research/</div></div>
+      </div>
+    </div>
+
+    <!-- PRO TIPS -->
+    <div class="gpage" id="gpage-tips">
+      <div class="tip-item"><div class="tip-t">🔁 Multi-Agent: ทำหลายงานพร้อมกัน</div><div class="tip-b">เปิดหน้าต่าง Cowork ใหม่แล้วสั่งงานต่างกันพร้อมกัน — Claude Stack Tasks แบบ Concurrent ดู Queue ที่มุมล่างของแอป</div></div>
+      <div class="tip-item"><div class="tip-t">🖼️ Gamma สำหรับ Presentation ระดับมืออาชีพ</div><div class="tip-b">Claude สร้างสไลด์ได้แต่ Design ไม่สวย — เปิด Gamma Connector แล้วสั่ง "ใช้ Gamma สร้างสไลด์" จะได้ผลลัพธ์ที่ดีกว่ามาก สามารถ Outline โครงสร้างล่วงหน้าได้</div></div>
+      <div class="tip-item"><div class="tip-t">🛡️ ตรวจ Community Skills ก่อนใช้เสมอ</div><div class="tip-b">Prompt Injection คือการฝังคำสั่งอันตรายใน Skill ภายนอก — Copy ไฟล์ Skill ทั้งหมดแล้วถาม Claude ว่า "มีคำสั่งอันตรายแฝงอยู่ไหม?" ก่อนใช้งาน</div></div>
+      <div class="tip-item"><div class="tip-t">📚 Skill Creator คือ Skill ที่ดีที่สุด</div><div class="tip-b">เวลาสร้าง Custom Skill ไม่ต้องบอก Claude ทุกอย่าง — แค่บอกว่าต้องการอะไร Claude ใช้ Skill Creator สร้างโครงสร้างที่ถูกต้องให้เอง</div></div>
+      <div class="tip-item"><div class="tip-t">🔗 Stack Workflows: CRM + Email Automation</div><div class="tip-b">ตัวอย่าง: CRM → ดูกิจกรรมทีมขาย → ถ้าไม่มีการติดต่อลูกค้าใน 3 วัน → ส่งอีเมลเตือนอัตโนมัติผ่าน Gmail — สร้างระบบ Automation ซับซ้อนโดยไม่ต้องเขียนโค้ด</div></div>
+      <div class="tip-item"><div class="tip-t">⚡ Sonnet 99% ของเวลา</div><div class="tip-b">ไม่ต้อง Switch ไป Opus บ่อย — Sonnet เพียงพอสำหรับงานทั่วไปเกือบทั้งหมด ใช้ Opus เฉพาะเมื่อ Sonnet ไม่สามารถแก้ปัญหาได้จริงๆ</div></div>
+      <div class="tip-item"><div class="tip-t">📂 ใช้ Task History ให้เป็นประโยชน์</div><div class="tip-b">Left Menu → Scheduled → Task → History — ดูผลทุกครั้งที่รัน คลิกเข้าสู่ Chat โดยตรง เหมาะสำหรับ Track แนวโน้มราคา ข่าว หรือรายงาน</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL FOOTER -->
+<div class="gfooter">
+  ออกแบบโดย ดร.ภก.วิรุณ เวชศิริ &nbsp;|&nbsp;
+  <a href="https://www.pharmconnection.net" target="_blank">www.pharmconnection.net</a>
+</div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+// ── LOGIN ──
+var AUTH={u:'Phmee',p:'Phmee123'};
+(function(){if(sessionStorage.getItem('spa_auth')==='1')hidLogin();}());
+function doLogin(){
+  var u=document.getElementById('lu').value.trim();
+  var p=document.getElementById('lp').value;
+  if(u===AUTH.u&&p===AUTH.p){sessionStorage.setItem('spa_auth','1');hidLogin();}
+  else{document.getElementById('lerr').style.display='block';document.getElementById('lp').value='';}
+}
+function hidLogin(){document.getElementById('login-overlay').style.display='none';}
+
+// ── NAVIGATION ──
+var pages=['home','article','mindmap','flowchart','checklist','guide'];
+function goTo(id,tabEl,fromDrawer){
+  pages.forEach(function(p){document.getElementById('page-'+p).classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('active');});
+  var idx=pages.indexOf(id);
+  var ntabs=document.querySelectorAll('.ntab');
+  if(ntabs[idx])ntabs[idx].classList.add('active');
+  document.querySelectorAll('.drawer-tab').forEach(function(t){t.classList.remove('active');});
+  var dtabs=document.querySelectorAll('.drawer-tab');
+  if(dtabs[idx])dtabs[idx].classList.add('active');
+  window.scrollTo(0,0);
+  if(fromDrawer)closeDrawer();
+}
+
+// ── DRAWER ──
+function toggleDrawer(){
+  document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── GUIDE SUB-TABS ──
+var gtabs=['setup','conn','skills','sched','pers','tips'];
+function gotoGtab(id){
+  gtabs.forEach(function(t){
+    document.getElementById('gpage-'+t).classList.remove('active');
+    document.getElementById('gt-'+t).classList.remove('active');
+  });
+  document.getElementById('gpage-'+id).classList.add('active');
+  document.getElementById('gt-'+id).classList.add('active');
+}
+
+// ── MINDMAP DATA ──
+var mmData=[
+  {icon:'🌐',title:'ภาพรวมและการเข้าถึง',items:[
+    {t:'สร้างบัญชีที่ claude.ai → ดาวน์โหลดแอปเดสก์ท็อป',s:['💬 Chat — แชทธรรมดา','🛠️ Cowork — Execute งานอัตโนมัติ','💻 Claude Code — สำหรับนักพัฒนา']},
+  ]},
+  {icon:'🧠',title:'การตั้งค่าพื้นฐาน',items:[
+    {t:'<strong>เลือกโมเดล:</strong> Sonnet (99%) / Opus (ซับซ้อน) / Haiku (ด่วน)',s:[]},
+    {t:'<strong>Extended Thinking</strong> — เปิดทิ้งไว้เสมอ',s:[]},
+    {t:'<strong>โฟลเดอร์</strong> — แยกแต่ละโปรเจกต์ชัดเจน',s:[]},
+  ]},
+  {icon:'🔌',title:'Connectors และ MCP',items:[
+    {t:'<strong>MCP (Model Context Protocol)</strong> = กลไกเชื่อมต่อภายนอก',s:[]},
+    {t:'<strong>ตัวอย่าง Connectors:</strong> Gmail, Gamma, ClickUp, Kiwi.com, Jira',s:[]},
+    {t:'ควบคุมสิทธิ์: Always Allow / Needs Approval / Block',s:[]},
+    {t:'<strong style="color:#fca5a5;">⚠️ ระวัง Community Skills:</strong> Prompt Injection Risk',s:[]},
+  ]},
+  {icon:'🎯',title:'Skills',items:[
+    {t:'<strong>Anthropic Skills</strong> — ติดมาตั้งแต่ต้น (Skill Creator, Docs, PPT)',s:[]},
+    {t:'<strong>Custom Skills</strong> — สร้างเอง ด้วย Skill Creator',s:['Evaluation Loop: ทดสอบ With/Without Skill','ให้ Feedback → แก้ไข → Copy to Repository']},
+    {t:'<strong>Community Skills</strong> — ดาวน์โหลดจาก GitHub (ตรวจก่อนใช้)',s:[]},
+  ]},
+  {icon:'⏰',title:'Scheduled Tasks',items:[
+    {t:'Left Menu → Scheduled → New Task',s:[]},
+    {t:'ตั้งค่า: Name, Prompt, Frequency, Folder, Connector',s:[]},
+    {t:'<strong>ตัวอย่าง:</strong> สรุปอีเมลทุกเช้า, ติดตามราคาตั๋ว, รายงาน CRM',s:[]},
+    {t:'History — ดูผลย้อนหลังทุกครั้งที่รัน',s:[]},
+  ]},
+  {icon:'🎨',title:'Personalization Settings',items:[
+    {t:'<strong>Claude Personalization</strong> — Tone, Format, Problem Solving (ทุกแท็บ)',s:[]},
+    {t:'<strong>Cowork Global Instructions</strong> — File Naming, Folder Structure',s:[]},
+  ]},
+  {icon:'💡',title:'Pro Tips',items:[
+    {t:'Multi-Agent: เปิดหลายหน้าต่างพร้อมกัน',s:[]},
+    {t:'ใช้ Gamma Connector สำหรับ Presentation คุณภาพสูง',s:[]},
+    {t:'Sonnet เพียงพอสำหรับงาน 99% — ใช้ Opus เฉพาะเมื่อจำเป็น',s:[]},
+    {t:'Stack Workflows: CRM + Email Automation ไม่ต้องเขียนโค้ด',s:[]},
+  ]},
+];
+
+function buildMindmap(){
+  var html='';
+  mmData.forEach(function(b,i){
+    html+='<div class="mm-branch">';
+    html+='<div class="mm-bhead" onclick="toggleMM('+i+')">';
+    html+='<span class="mm-icon">'+b.icon+'</span>';
+    html+='<span>'+b.title+'</span>';
+    html+='<span class="mm-arr" id="marr-'+i+'">▼</span>';
+    html+='</div>';
+    html+='<div class="mm-body" id="mb-'+i+'">';
+    b.items.forEach(function(it){
+      html+='<div class="mm-l2"><div class="mm-dot"></div><div class="mm-l2t">'+it.t+'</div></div>';
+      it.s.forEach(function(sub){
+        html+='<div class="mm-l3"><span class="mm-dot3">▸</span>'+sub+'</div>';
+      });
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('mmdata').innerHTML=html;
+}
+buildMindmap();
+
+function toggleMM(i){
+  var body=document.getElementById('mb-'+i);
+  var arr=document.getElementById('marr-'+i);
+  var collapsed=body.classList.contains('collapsed');
+  body.classList.toggle('collapsed');
+  arr.textContent=collapsed?'▼':'▶';
+}
+function expandAll(){document.querySelectorAll('.mm-body').forEach(function(b){b.classList.remove('collapsed');});document.querySelectorAll('.mm-arr').forEach(function(a){a.textContent='▼';});}
+function collapseAll(){document.querySelectorAll('.mm-body').forEach(function(b){b.classList.add('collapsed');});document.querySelectorAll('.mm-arr').forEach(function(a){a.textContent='▶';});}
+
+// ── CONNECTORS ──
+var CONN=[
+  {i:'📧',n:'Gmail',t:'อีเมล',d:'อ่าน จัดระเบียบ และส่งอีเมลในนามเรา',e:'สรุปอีเมลสำคัญ, ร่างอีเมลตอบ'},
+  {i:'🖼️',n:'Gamma',t:'Presentation',d:'AI เฉพาะทางสร้างสไลด์ระดับมืออาชีพ',e:'แปลงรายงานเป็น Deck สวยงาม'},
+  {i:'✈️',n:'Kiwi.com',t:'ท่องเที่ยว',d:'ค้นหาและติดตามราคาตั๋วเครื่องบิน Real-time',e:'แนะนำเวลาซื้อตั๋วที่ถูกที่สุด'},
+  {i:'✅',n:'ClickUp',t:'Project Mgmt',d:'จัดการโปรเจกต์ Task และ Workflow',e:'สร้าง Task, อัปเดต Status, รายงาน Sprint'},
+  {i:'📋',n:'Jira (Atlassian)',t:'Dev',d:'ติดตาม Bug, Sprint และ Issue ของทีม Dev',e:'สร้าง Issue, อัปเดต Ticket'},
+  {i:'🔍',n:'Web Search',t:'ค้นหา',d:'ค้นหาข้อมูลออนไลน์ Real-time ไม่มี Cutoff',e:'ข่าวล่าสุด, ราคาหุ้น, งานวิจัย'},
+  {i:'💬',n:'Slack',t:'สื่อสาร',d:'ส่งข้อความ สรุป Thread อัปเดตช่อง',e:'รายงานสถานะโปรเจกต์ทุกวัน'},
+  {i:'📊',n:'Google Sheets',t:'ข้อมูล',d:'อ่าน เขียน และวิเคราะห์ Spreadsheet',e:'อัปเดตรายงาน, สรุปข้อมูล'},
+];
+function buildConn(){
+  var g=document.getElementById('connGrid');
+  if(!g)return;
+  g.innerHTML=CONN.map(function(c){return'<div class="conn-card" onclick="this.classList.toggle(\'on\')"><div class="conn-hd"><span class="conn-ico">'+c.i+'</span><span class="conn-nm">'+c.n+'</span><span class="conn-tg">'+c.t+'</span></div><div class="conn-desc">'+c.d+'</div><div class="conn-ex">💡 '+c.e+'</div></div>';}).join('');
+}
+buildConn();
+
+// ── SKILL GENERATOR ──
+function genSkill(force){
+  var n=document.getElementById('sn').value||'My Custom Skill';
+  var w=document.getElementById('sw').value;
+  var t=document.getElementById('st').value;
+  if(!force&&!w)return;
+  var out=document.getElementById('skillOut');
+  var pre=document.getElementById('skillPre');
+  pre.textContent='สร้าง Claude Skill ชื่อ "'+n+'" โดยมีรายละเอียดดังนี้:\n\nสิ่งที่ Skill ต้องทำ:\n'+(w||'(ระบุสิ่งที่ต้องการ)')+'\n\nTrigger Condition:\nควร Trigger เมื่อ: '+(t||'(ระบุเงื่อนไข)')+'\nไม่ควร Trigger เมื่อ: ผู้ใช้ไม่ได้กล่าวถึง Skill นี้โดยตรง\n\nImplementation Notes:\n- ใช้รูปแบบ Skill มาตรฐาน Anthropic\n- รัน Evaluation Loop หลังสร้างเสร็จ\n- ให้ Feedback และ Copy to Skills Repository';
+  out.classList.add('show');
+}
+
+// ── SCHEDULER ──
+function upTask(){
+  document.getElementById('pn').textContent=document.getElementById('tn').value||'—';
+  document.getElementById('pf').textContent=document.getElementById('tf').value||'—';
+  document.getElementById('pt').textContent=document.getElementById('tt').value||'—';
+  document.getElementById('pc').textContent=document.getElementById('tc').value||'—';
+  var p=document.getElementById('tp').value;
+  document.getElementById('pp').textContent=p?p.substring(0,100)+(p.length>100?'...':''):'ยังไม่มี Prompt...';
+}
+function cpTask(){
+  var txt='Task: '+document.getElementById('tn').value+'\nPrompt: '+document.getElementById('tp').value+'\nFrequency: '+document.getElementById('tf').value+'\nTime: '+document.getElementById('tt').value+'\nConnector: '+document.getElementById('tc').value;
+  navigator.clipboard.writeText(txt).then(function(){
+    var b=event.target;var o=b.textContent;b.textContent='✅ Copied!';
+    setTimeout(function(){b.textContent=o;},2000);
+  });
+}
+
+// ── CHECKLIST ──
+var CL=[
+  {sec:'📚 สิ่งที่ต้องเข้าใจ',id:'s1',items:[
+    {l:'เข้าใจความแตกต่างระหว่าง Chat / Cowork / Claude Code',d:'Chat = แชท · Cowork = Execute งาน · Code = นักพัฒนา',t:'แนวคิด'},
+    {l:'เข้าใจว่า Cowork Execute งานแทนเราได้จริง',d:'ไม่ใช่แค่แชท แต่ลงมือทำ เช่น สร้างไฟล์ ส่งอีเมล',t:'แนวคิด'},
+    {l:'เข้าใจบทบาทของโมเดลแต่ละตัว',d:'Sonnet (99%) / Opus (ซับซ้อน) / Haiku (ด่วน)',t:'แนวคิด'},
+    {l:'เข้าใจว่า Connectors / MCP คืออะไร',d:'กลไกเชื่อมต่อ Claude กับเครื่องมือภายนอก',t:'Connectors'},
+    {l:'เข้าใจว่า Skills คือชุดคำสั่งที่ Claude โหลดเองอัตโนมัติ',d:'ไม่ต้องอธิบายสไตล์งานซ้ำทุกครั้ง',t:'Skills'},
+    {l:'เข้าใจความเสี่ยง Prompt Injection จาก Community Skills',d:'ตรวจสอบ Skill ภายนอกผ่าน Claude ก่อนใช้เสมอ',t:'Safety'},
+  ]},
+  {sec:'⚙️ สิ่งที่ต้องตั้งค่า',id:'s2',items:[
+    {l:'สร้างบัญชี claude.ai และดาวน์โหลดแอปเดสก์ท็อป',d:'เข้าผ่านไอคอน Download ↓ ที่ claude.ai',t:'Setup'},
+    {l:'เปิด Extended Thinking ทิ้งไว้เสมอ',d:'Token เพิ่มเล็กน้อย แต่ไม่ต้องคอยเปิด-ปิด',t:'Setup'},
+    {l:'สร้างโฟลเดอร์แยกสำหรับแต่ละโปรเจกต์',d:'แยกโปรเจกต์ = แยกโฟลเดอร์เสมอ',t:'Setup'},
+    {l:'เพิ่ม Connector ที่จำเป็น',d:'Plus Sign → Connectors → Browse → Activate',t:'Connectors'},
+    {l:'ตั้งค่า Claude Personalization',d:'Tone · Format · Problem Solving · Sources',t:'Personalize'},
+    {l:'ตั้งค่า Cowork Global Instructions',d:'รูปแบบชื่อไฟล์ · โครงสร้างโฟลเดอร์',t:'Personalize'},
+  ]},
+  {sec:'🚀 สิ่งที่ต้องทำ',id:'s3',items:[
+    {l:'ทดลองสั่ง Cowork ค้นหาข้อมูลและสร้างรายงาน',d:'เช่น "ค้นหารายงาน AI Adoption และสร้างรายงานสรุป"',t:'ลงมือทำ'},
+    {l:'ลองใช้ Connector Gamma สร้าง Presentation',d:'เปิด Gamma Connector → "ใช้ Gamma สร้างสไลด์"',t:'Connectors'},
+    {l:'สร้าง Custom Skill อย่างน้อย 1 ตัว',d:'เช่น Brand Skill, Report Style Skill',t:'Skills'},
+    {l:'รัน Evaluation Loop และให้ Feedback',d:'เปรียบเทียบ With/Without Skill → Copy to Repository',t:'Skills'},
+    {l:'ตั้ง Scheduled Task อย่างน้อย 1 งาน',d:'เช่น สรุปอีเมลทุกเช้า หรือติดตามราคาตั๋ว',t:'Automation'},
+    {l:'ทดลอง Multi-Agent: ทำงานหลายอย่างพร้อมกัน',d:'เปิดหน้าต่างใหม่ สั่งงานต่างกัน ดู Queue ที่มุมล่าง',t:'Advanced'},
+    {l:'ตรวจสอบ Scheduled Task History',d:'Left Menu → Scheduled → Task → History',t:'Automation'},
+  ]},
+];
+var TOTAL=19;
+function buildChecklist(){
+  var html='';
+  CL.forEach(function(sec){
+    html+='<div class="cl-section" id="'+sec.id+'">';
+    html+='<div class="cl-sec-hd"><span class="mm-icon">'+sec.sec.split(' ')[0]+'</span>';
+    html+='<span class="cl-sec-title">'+sec.sec.split(' ').slice(1).join(' ')+'</span>';
+    html+='<span class="cl-badge" id="b-'+sec.id+'">0/'+sec.items.length+'</span></div>';
+    sec.items.forEach(function(it,j){
+      html+='<div class="cl-item" id="ci-'+sec.id+'-'+j+'" onclick="clToggle(\''+sec.id+'\','+j+')">';
+      html+='<div class="cl-chk"><span class="cl-tick">✓</span></div>';
+      html+='<div><div class="cl-lbl">'+it.l+'</div><div class="cl-desc">'+it.d+'</div>';
+      html+='<span class="cl-tag">'+it.t+'</span></div></div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('cl-sections').innerHTML=html;
+}
+buildChecklist();
+function clToggle(secId,j){
+  var el=document.getElementById('ci-'+secId+'-'+j);
+  el.classList.toggle('done');
+  clUpdate();
+}
+function clUpdate(){
+  var done=document.querySelectorAll('.cl-item.done').length;
+  var pct=Math.round(done/TOTAL*100);
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('pcnt').textContent=done+' / '+TOTAL+' ข้อเสร็จแล้ว';
+  CL.forEach(function(sec){
+    var items=document.querySelectorAll('#'+sec.id+' .cl-item');
+    var d=document.querySelectorAll('#'+sec.id+' .cl-item.done').length;
+    var b=document.getElementById('b-'+sec.id);
+    b.textContent=d+'/'+items.length;
+    b.className='cl-badge'+(d===items.length?' done':'');
+  });
+  document.getElementById('congrats').classList.toggle('show',done===TOTAL);
+}
+function clReset(){document.querySelectorAll('.cl-item').forEach(function(e){e.classList.remove('done');});clUpdate();}
+function clAll(){document.querySelectorAll('.cl-item').forEach(function(e){e.classList.add('done');});clUpdate();}
+</script>
+</body>
+</html>
